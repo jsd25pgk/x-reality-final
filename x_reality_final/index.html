@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Immersive 3D Bar Chart – A-Frame</title>
+
+  <!-- ✅ A-FRAME SCRIPT (FIXED) -->
+  <script src="https://aframe.io/releases/1.0.3/aframe.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b1020;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    .label {
+      color: white;
+      font-size: 28px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<a-scene background="color: #0b1020">
+
+  <!-- Camera + controls -->
+  <a-entity
+    position="0 6 14"
+    camera
+    look-controls
+    wasd-controls>
+  </a-entity>
+
+  <!-- Lights -->
+  <a-entity light="type: ambient; intensity: 0.4"></a-entity>
+  <a-entity light="type: directional; intensity: 0.8" position="5 10 5"></a-entity>
+
+  <!-- Floor -->
+  <a-plane
+    rotation="-90 0 0"
+    width="20"
+    height="20"
+    color="#11162a"
+    shadow>
+  </a-plane>
+
+  <!-- Bars container -->
+  <a-entity id="bars"></a-entity>
+
+</a-scene>
+
+<script>
+  const data = [
+    { label: "A", value: 4 },
+    { label: "B", value: 7 },
+    { label: "C", value: 3 },
+    { label: "D", value: 9 },
+    { label: "E", value: 6 }
+  ];
+
+  const colors = ["#7c8cff", "#ff7ad9", "#46d3ff", "#ffa34a", "#9dff6a"];
+  const bars = document.querySelector("#bars");
+
+  data.forEach((d, i) => {
+    const height = d.value;
+
+    // Bar
+    const bar = document.createElement("a-box");
+    bar.setAttribute("width", 1);
+    bar.setAttribute("depth", 1);
+    bar.setAttribute("height", height);
+    bar.setAttribute("color", colors[i % colors.length]);
+
+    // Position (height/2 so it grows from floor)
+    bar.setAttribute("position", {
+      x: i * 2 - 4,
+      y: height / 2,
+      z: 0
+    });
+
+    // Animation
+    bar.setAttribute("animation", {
+      property: "scale",
+      from: "1 0.01 1",
+      to: "1 1 1",
+      dur: 800,
+      easing: "easeOutElastic"
+    });
+
+    // Hover interaction
+    bar.addEventListener("mouseenter", () => {
+      bar.setAttribute("color", "#ffffff");
+    });
+
+    bar.addEventListener("mouseleave", () => {
+      bar.setAttribute("color", colors[i % colors.length]);
+    });
+
+    // Label
+    const label = document.createElement("a-text");
+    label.setAttribute("value", `${d.label}: ${d.value}`);
+    label.setAttribute("align", "center");
+    label.setAttribute("position", `0 ${height + 0.6} 0`);
+    label.setAttribute("color", "#ffffff");
+    label.setAttribute("scale", "1.2 1.2 1.2");
+
+    bar.appendChild(label);
+    bars.appendChild(bar);
+  });
+</script>
+
+</body>
+</html>
